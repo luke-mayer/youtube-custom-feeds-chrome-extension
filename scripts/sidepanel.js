@@ -540,13 +540,45 @@ async function addFeed(feedName) {
 
 async function fetchFeeds() {
   // TODO will fetch feedNames and their channels
+  console.log("fetch feeds call");
 }
 
 async function fetchChannels(feedName) {
   // TODO will fetch channels for the given feedName and add them to feedMap
+  console.log("fetch channels call");
 }
 
 async function fetchVideos(feedName) {
   // TODO will fetch videos for the provided feed
-  return testVideos; // Temporary
+  console.log("fetch videos call");
+
+  const videosKey = `${feedName}-videos`;
+  var videos;
+
+  await chrome.storage.session.get([videosKey]).then(async (result) => {
+    if (result[videosKey]) {
+      console.log("videos found in chrome.storage.session");
+      videos = result[videosKey];
+    } else {
+      console.log("videos not found in storage, retrieving from backend");
+      videos = await updateVideos(feedName);
+    }
+  });
+
+  return videos;
+}
+
+async function updateVideos(feedName) {
+  const videosKey = `${feedName}-videos`;
+  var videos;
+
+  //TODO fetch videos from backend
+  videos = testVideos; // temporary
+
+  let storageVideos = {};
+  storageVideos[videosKey] = videos;
+  chrome.storage.session.set(storageVideos);
+  console.log("videos stored in backend");
+
+  return videos;
 }

@@ -4,6 +4,11 @@ body {
     /* margin: 20px; */
   }
 
+  .dark-mode {
+    background-color: #282828;
+    color: white;
+  }
+
   #extension-title {
     text-align: center;
   }

@@ -23,3 +23,14 @@ chrome.tabs.onUpdated.addListener(async (tabId, info, tab) => {
     });
   }
 });
+
+chrome.storage.session.setAccessLevel(
+  { accessLevel: "TRUSTED_AND_UNTRUSTED_CONTEXTS" },
+  () => {
+    if (chrome.runtime.lastError) {
+      console.error("Failed to set access level: ", chrome.runtime.lastError);
+    } else {
+      console.log("Access level set to TRUSTED_AND_UNTRUSTED_CONTEXTS");
+    }
+  }
+);
