@@ -3,7 +3,7 @@
 import { signUp, signIn } from "./auth.js";
 import { auth } from "../firebase/firebase-init.js";
 import { onAuthStateChanged } from "../firebase/firebase-auth.js";
-import { BASE_URL } from "firebase/firebase-secrets";
+import { BASE_URL } from "../firebase/firebase-secrets.js";
 
 const PREFIX = "/api/v1";
 
@@ -11,6 +11,7 @@ const PREFIX = "/api/v1";
 const authTitle = document.getElementById("auth-title");
 const emailInput = document.getElementById("email");
 const passwordInput = document.getElementById("password");
+const addFeedInput = document.getElementById("add-feed-input");
 const authContainer = document.getElementById("auth-container");
 const addFeedContainer = document.getElementById("add-feed-div");
 const authButton = document.getElementById("auth-button");
@@ -18,10 +19,10 @@ const toggleAuth = document.getElementById("toggle-auth");
 const toggleLink = document.getElementById("toggle-link");
 const statusText = document.getElementById("status");
 const appStatus = document.getElementById("app-status");
-const testButton = document.getElementById("test-button");
 const backToFeedsButton = document.getElementById("back-to-feeds-button");
 const addFeedButton = document.getElementById("add-feed-button");
 const signOutButton = document.getElementById("sign-out-button");
+const addFeedForm = document.getElementById("add-feed-form");
 
 let isSignIn = true;
 let signedIn = false;
@@ -278,12 +279,14 @@ addFeedButton.addEventListener("click", (e) => {
   toggleAddFeedOn();
 });
 
-testButton.addEventListener("click", (e) => {
+// creates a new feed
+addFeedForm.onsubmit = (e) => {
+  e.preventDefault();
   e.stopPropagation();
-  var feeds = [...feedMap.keys()];
-  toggleFeedsOn();
-  displayFeeds(feeds);
-});
+  addFeed(addFeedInput.value.trim());
+  addFeedForm.reset();
+  toggleAddFeedOff();
+};
 
 backToFeedsButton.addEventListener("click", (e) => {
   e.stopPropagation();
@@ -517,6 +520,7 @@ function toggleVideosOff() {
   videosContainer.style.display = "none";
   videosVisible = false;
 }
+
 async function removeChannel(feedName, channelHandle) {
   // TODO Removes channel from the specified feed including removing from backend database
   // Might want to add a "are you sure" popup
@@ -528,8 +532,18 @@ async function addChannel(feedName, channelHandle) {
   console.log("submitted add channel, handle: ", channelHandle);
 }
 
+async function addFeed(feedName) {
+  // TODO adds the specified feed to the database and adds to the userFeeds map
+  // TODO also calls fetchChannels!!!
+  console.log("Submitted add feed form: ", feedName);
+}
+
 async function fetchFeeds() {
-  // TODO will fetch feedNames and their list of channel handles
+  // TODO will fetch feedNames and their channels
+}
+
+async function fetchChannels(feedName) {
+  // TODO will fetch channels for the given feedName and add them to feedMap
 }
 
 async function fetchVideos(feedName) {

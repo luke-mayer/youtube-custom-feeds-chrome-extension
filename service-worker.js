@@ -1,6 +1,4 @@
 const YOUTUBE_ORIGIN = "https://www.youtube.com";
-const BASE_URL = "https://youtube-custom-feeds-865842770127.us-east4.run.app";
-const PREFIX = "/api/v1";
 
 // Allows users to open the side panel by clicking on the action toolbar icon
 chrome.sidePanel
