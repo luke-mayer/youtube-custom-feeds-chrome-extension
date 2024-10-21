@@ -1,0 +1,28 @@
+{
+  "manifest_version": 3,
+  "name": "YouTube Custom Feeds",
+  "version": "1.0",
+  "description": "Chrome extension with Firebase Authentication in the side panel used to create custom youtube feeds.",
+  "permissions": ["storage", "sidePanel", "tabs"],
+  "host_permissions": [
+    "https://youtube-custom-feeds-865842770127.us-east4.run.app/*"
+  ],
+  "action": {
+    "default_popup": "hello.html",
+    "default_icon": {
+      "16": "images/icon.png",
+      "32": "images/icon.png",
+      "48": "images/icon.png",
+      "128": "images/icon.png"
+    }
+  },
+  "background": {
+    "service_worker": "service-worker.js"
+  },
+  "side_panel": {
+    "default_path": "sidepanel/sidepanel.html"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  }
+}

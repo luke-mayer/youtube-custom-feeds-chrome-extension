@@ -1,0 +1,165 @@
+/* /sidepanel/sidepanel.css */
+body {
+    font-family: Arial, sans-serif;
+    /* margin: 20px; */
+  }
+
+  #extension-title {
+    text-align: center;
+  }
+  
+  #auth-container {
+    max-width: 300px;
+    margin: auto;
+  }
+  
+  /*
+  input {
+    width: 100%;
+    padding: 8px;
+    margin: 8px 0;
+  }
+  
+  button {
+    width: 100%;
+    padding: 8px;
+  }
+  */
+
+  span {
+    display: block;
+    overflow: hidden;
+  }
+
+  #status {
+    color: red;
+  }
+
+  .container {
+    padding: 2px 16px;
+  }
+
+  .container-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-left: 16px;
+    margin-right: 16px;
+  }
+
+  .add-feed-container {
+    justify-content: space-between;
+    align-items: center;
+    margin-left: 16px;
+    margin-right: 16px;
+  }
+
+  .add-feed-container input {
+    width: 100%;
+  }
+
+  .submit-button {
+    float: right;
+  }
+
+  .card {
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transition: 0.3s;
+  }
+  
+  /* On mouse-over, add a deeper shadow */
+  .card:hover {
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .card {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin: 10px 0;
+    background-color: #f9f9f9;
+  }
+
+  .video-card:hover {
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+  }
+
+  .video-card {
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transition: 0.3s;
+
+    display: flex;
+    border: 1px solid #ccc;
+    padding: 0;
+    margin: 10px 0;
+    background-color: #f9f9f9;
+  }
+
+  .video-info {
+    display: block;
+    margin-left: 5px;
+    align-content: center;
+  }
+
+  .video-info h3, h4 {
+    margin-block-start: 10px;
+    margin-block-end: 10px;
+  }
+
+  .thumbnail {
+    min-height: 30px;
+    max-height: 120px;
+  }
+
+  .channel-list {
+    margin-top: 10px;
+  }
+
+  .channel-list ul {
+    list-style-type: none;
+    padding: 0;
+  }
+
+  .channel-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .open-feed-button {
+    margin-top: 10px;
+    display: block;
+    width: 100%;
+  }
+
+
+  .add-channel-div {
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+  }
+
+  .add-channel-div input {
+    flex: 1;
+  }
+
+  .add-channel-div button {
+    padding: 5px 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+
+  .add-channel-div button:hover {
+    background-color: #0056b3;
+  }
+
+
+  
+  

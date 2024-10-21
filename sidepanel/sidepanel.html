@@ -1,0 +1,64 @@
+<!-- /sidepanel/sidepanel.html -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Firebase Auth Side Panel</title>
+    <link rel="stylesheet" href="sidepanel.css" />
+  </head>
+  <body>
+    <h1 id="extension-title">YouTube Custom Feeds</h1>
+    <p id="app-status"></p>
+
+    <div id="auth-container" style="display: block">
+      <h2 id="auth-title">Sign In</h2>
+      <input type="email" id="email" placeholder="Email" /><br />
+      <input type="password" id="password" placeholder="Password" /><br />
+      <button id="auth-button">Sign In</button>
+      <p id="toggle-auth">
+        Don't have an account? <a href="#" id="toggle-link">Sign Up</a>
+      </p>
+      <p id="status"></p>
+    </div>
+
+    <div id="feed-container" style="display: none">
+      <div class="container-header">
+        <h2>Feeds</h2>
+        <div>
+          <button id="add-feed-button">New Feed</button>
+          <button id="sign-out-button">Sign Out</button>
+        </div>
+      </div>
+
+      <div class="add-feed-container" id="add-feed-div" style="display: none">
+        <form id="add-feed-form">
+          <button class="submit-button" type="submit">Create Feed</button>
+          <span>
+            <input
+              type="text"
+              id="add-feed-input"
+              placeholder="New feed name..."
+          /></span>
+        </form>
+      </div>
+
+      <div class="container" id="cards-div"></div>
+    </div>
+
+    <div id="video-container" style="display: none">
+      <div class="container-header">
+        <button id="back-to-feeds-button">Back</button>
+        <h2>Videos</h2>
+      </div>
+
+      <div class="container" id="videos-div"></div>
+    </div>
+
+    <button id="test-button">Test Button</button>
+
+    <!-- Include Firebase SDKs and scripts -->
+    <script type="module" src="../firebase/firebase-app.js"></script>
+    <script type="module" src="../firebase/firebase-auth.js"></script>
+    <script type="module" src="../scripts/sidepanel.js"></script>
+  </body>
+</html>
