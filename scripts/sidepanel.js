@@ -23,6 +23,8 @@ const backToFeedsButton = document.getElementById("back-to-feeds-button");
 const addFeedButton = document.getElementById("add-feed-button");
 const signOutButton = document.getElementById("sign-out-button");
 const addFeedForm = document.getElementById("add-feed-form");
+const videoHeaderContainer = document.getElementById("video-header-container");
+const videoHeader = document.getElementById("video-header");
 
 let isSignIn = true;
 let signedIn = false;
@@ -414,6 +416,18 @@ function displayChannels(feedName) {
 }
 
 async function displayVideos(feedName) {
+  videoHeader.textContent = feedName;
+  var refreshButton = document.createElement("button");
+  refreshButton.id = "refresh-button";
+  refreshButton.textContent = "Refresh";
+  refreshButton.addEventListener("click", (e) => {
+    e.stopPropagation();
+    updateVideos();
+  });
+
+  console.log("HEREREREEREERERE");
+  videoHeaderContainer.appendChild(refreshButton);
+
   var videos = await fetchVideos(feedName); // async call in future
 
   var cardsDiv = document.getElementById("videos-div");
