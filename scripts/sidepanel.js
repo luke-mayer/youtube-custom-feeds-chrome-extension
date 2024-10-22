@@ -165,7 +165,7 @@ const testChannels4 = [
   "feed4 channel5",
 ];
 
-const feedMap = new Map();
+let feedMap = new Map();
 feedMap.set("Feed One", testChannels1);
 feedMap.set("Feed Two", testChannels2);
 feedMap.set("Feed Three", testChannels3);
@@ -360,19 +360,34 @@ function displayFeeds(feedNames) {
 function displayChannels(feedName) {
   var channelArray = feedMap.get(feedName);
 
-  var channelsDiv = document.createElement("div");
+  var channelsDivId = `${feedName}-channel-list-div`;
+
+  var channelsDiv = document.getElementById(channelsDivId);
+  if (!channelsDiv) {
+    channelsDiv = document.createElement("div");
+  }
+
   channelsDiv.className = "channel-list";
-  channelsDiv.id = `${feedName}-channel-list-div`;
+  channelsDiv.id = channelsDivId;
   channelsDiv.style = "display: none;";
 
-  var ul = document.createElement("ul");
-  ul.id = `${feedName}-card-channel-list`;
+  var ulId = `${feedName}-card-channel-list`;
+  var ul = document.getElementById(ulId);
+  if (!ul) {
+    ul = document.createElement("ul");
+  }
+  ul.id = ulId;
 
   channelArray.forEach((channelHandle) => {
+    var liId = `${feedName}-card-${channelHandle}`;
+    if (document.getElementById(liId)) {
+      return; // Skips if channel is already renderred
+    }
+
     var li = document.createElement("li");
     li.innerText = channelHandle;
     li.className = "feed-card-channels";
-    li.id = `${feedName}-card-${channelHandle}`;
+    li.id = liId;
 
     var removeButton = document.createElement("button");
     removeButton.className = "edit-channels-button";
@@ -386,35 +401,42 @@ function displayChannels(feedName) {
     ul.appendChild(li);
   });
 
-  channelsDiv.appendChild(ul);
+  if (!channelsDiv.contains(ul)) {
+    channelsDiv.appendChild(ul);
+  }
 
-  var addChannelForm = document.createElement("form");
+  var addChannelFormId = `${feedName}-add-channel-form`;
 
-  var addChannelDiv = document.createElement("div");
-  addChannelDiv.className = "add-channel-div";
+  if (!document.getElementById(addChannelFormId)) {
+    var addChannelForm = document.createElement("form");
+    addChannelForm.id = addChannelFormId;
 
-  var channelInput = document.createElement("input");
-  channelInput.type = "text";
-  channelInput.id = `${feedName}-channel-input`;
-  channelInput.placeholder = "Add channel handle...";
+    var addChannelDiv = document.createElement("div");
+    addChannelDiv.className = "add-channel-div";
 
-  var submitButton = document.createElement("button");
-  submitButton.type = "submit";
-  submitButton.textContent = "Add";
+    var channelInput = document.createElement("input");
+    channelInput.type = "text";
+    channelInput.id = `${feedName}-channel-input`;
+    channelInput.placeholder = "Add channel handle...";
 
-  addChannelDiv.appendChild(channelInput);
-  addChannelDiv.appendChild(submitButton);
+    var submitButton = document.createElement("button");
+    submitButton.type = "submit";
+    submitButton.textContent = "Add";
 
-  addChannelForm.appendChild(addChannelDiv);
+    addChannelDiv.appendChild(channelInput);
+    addChannelDiv.appendChild(submitButton);
 
-  addChannelForm.onsubmit = async (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    addChannel(feedName, channelInput.value.trim());
-    addChannelForm.reset();
-  };
+    addChannelForm.appendChild(addChannelDiv);
 
-  channelsDiv.appendChild(addChannelForm);
+    addChannelForm.onsubmit = async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      addChannel(feedName, channelInput.value.trim());
+      addChannelForm.reset();
+    };
+
+    channelsDiv.appendChild(addChannelForm);
+  }
 
   return channelsDiv;
 }
@@ -594,11 +616,6 @@ async function removeChannel(feedName, channelHandle) {
   console.log("removed channel, handle: ", channelHandle);
 }
 
-async function addChannel(feedName, channelHandle) {
-  //TODO adds channel to the specified field including posting it to backend
-  console.log("submitted add channel, handle: ", channelHandle);
-}
-
 async function fetchFeeds() {
   // TODO will fetch feedNames and their channels
   console.log("fetch feeds call");
@@ -673,7 +690,6 @@ async function sendUserIdToBackend(uid) {
 // Creates a new feed and adds it to the database
 async function addFeed(feedName) {
   // TODO adds the specified feed to the database and adds to the userFeeds map
-  // TODO also calls fetchChannels!!!
   var addFeedFormError = document.getElementById("add-feed-form-error");
   if (!feedName || feedName.length < 1) {
     console.error("Invalid feedName: ", feedName);
@@ -714,6 +730,45 @@ async function addFeed(feedName) {
   addFeedFormError.style.display = "none";
   addFeedForm.reset();
   toggleAddFeedOff();
+}
+
+// /channel - POST
+// adds the specified channelHandle to the specified feed
+async function addChannel(feedName, channelHandle) {
+  // Backend call
+  try {
+    const response = await fetch(`${BASE_URL}${PREFIX}/channel`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Firebase-ID": auth.currentUser.uid,
+      },
+      body: JSON.stringify({
+        feedName: feedName,
+        channelHandle: channelHandle,
+      }),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log("addChannel(): Backend response:", data);
+      feedMap.get(feedName).push(channelHandle); // adds new feed to the feedMap
+      displayChannels(feedName);
+    } else {
+      const data = await response.json();
+      console.log("addChannel(): Backend response:", data);
+      console.error("addChannel(): Backend error:", response.statusText);
+      let errMessage = `Sorry, there was an issue, please try again later: ${response.statusText}`;
+      statusMessageDisplay(errMessage, 10);
+    }
+  } catch (error) {
+    let errMessage =
+      "Sorry, there was an issue, please restart the extension and try again.";
+    console.error("Error sending user ID to backend:", error);
+    statusMessageDisplay(errMessage, 10);
+  }
+
+  console.log("submitted add channel, handle: ", channelHandle);
 }
 
 // /videos - GET
