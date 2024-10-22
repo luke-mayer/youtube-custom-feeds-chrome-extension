@@ -108,7 +108,7 @@ authButton.addEventListener("click", async () => {
 
 // Displays the message to the user for the specified amount of time (in seconds)
 async function statusMessageDisplay(message, time) {
-  var pauseTime;
+  let pauseTime;
   if (time && time < 100) {
     pauseTime = time * 1000;
   } else {
@@ -128,11 +128,10 @@ async function statusMessageDisplay(message, time) {
 onAuthStateChanged(auth, (user) => {
   if (user) {
     console.log("User is signed in");
-    // Optionally, update UI to reflect signed-in state
     signedIntoFeeds();
   } else {
     console.log("No user is signed in.");
-    // Optionally, reset UI to sign-in form
+    // Maybe create function to gurrantee that everything is turned off besides sign in form
   }
 });
 
@@ -166,11 +165,12 @@ const testChannels4 = [
 ];
 
 let feedMap = new Map();
-feedMap.set("Feed One", testChannels1);
-feedMap.set("Feed Two", testChannels2);
-feedMap.set("Feed Three", testChannels3);
-feedMap.set("Feed Four", testChannels4);
+// feedMap.set("Feed One", testChannels1);
+//feedMap.set("Feed Two", testChannels2);
+//feedMap.set("Feed Three", testChannels3);
+//feedMap.set("Feed Four", testChannels4);
 
+/*
 const testVideo1 = {
   channel: "channel 1",
   title: "title 1",
@@ -274,6 +274,7 @@ const testVideos = [
   testVideo10,
 ];
 
+*/
 addFeedButton.addEventListener("click", (e) => {
   e.stopPropagation();
   toggleAddFeedOn();
@@ -286,8 +287,9 @@ addFeedForm.onsubmit = async (e) => {
   addFeed(addFeedInput.value.trim());
 };
 
-function signedIntoFeeds() {
-  var feeds = [...feedMap.keys()];
+async function signedIntoFeeds() {
+  await fetchFeeds();
+  let feeds = [...feedMap.keys()];
   authContainer.style.display = "none";
   toggleFeedsOn();
   displayFeeds(feeds);
@@ -302,7 +304,7 @@ function signedOutFeeds() {
 let feedVideosDisplayed = {};
 
 function displayFeeds(feedNames) {
-  var cardsDiv = document.getElementById("cards-div");
+  let cardsDiv = document.getElementById("cards-div");
   // cardsDiv.innerHTML = "";
 
   // Creating card for each feed
@@ -312,18 +314,18 @@ function displayFeeds(feedNames) {
       return; // Skips to the next feedName
     }
 
-    var card = document.createElement("div");
+    let card = document.createElement("div");
     card.className = "card";
     card.id = cardId;
 
-    var cardHeader = document.createElement("div");
+    let cardHeader = document.createElement("div");
     cardHeader.className = "card-header";
 
-    var feedTitle = document.createElement("h3");
+    let feedTitle = document.createElement("h3");
     feedTitle.innerText = feedName;
     cardHeader.appendChild(feedTitle);
 
-    var editButton = document.createElement("button");
+    let editButton = document.createElement("button");
     editButton.innerText = "Edit Channels";
     editButton.className = "edit-channels-button";
     editButton.id = `edit-channels-${feedName}`;
@@ -331,12 +333,12 @@ function displayFeeds(feedNames) {
 
     card.appendChild(cardHeader);
 
-    var videosButton = document.createElement("button");
+    let videosButton = document.createElement("button");
     videosButton.innerText = "Open Feed";
     videosButton.className = "open-feed-button";
     videosButton.id = `open-feed-${feedName}`;
 
-    var channelsDiv = displayChannels(feedName);
+    let channelsDiv = displayChannels(feedName);
     card.append(channelsDiv);
     card.appendChild(videosButton);
 
@@ -358,11 +360,11 @@ function displayFeeds(feedNames) {
 }
 
 function displayChannels(feedName) {
-  var channelArray = feedMap.get(feedName);
+  let channelArray = feedMap.get(feedName);
 
-  var channelsDivId = `${feedName}-channel-list-div`;
+  let channelsDivId = `${feedName}-channel-list-div`;
 
-  var channelsDiv = document.getElementById(channelsDivId);
+  let channelsDiv = document.getElementById(channelsDivId);
   if (!channelsDiv) {
     channelsDiv = document.createElement("div");
   }
@@ -371,25 +373,25 @@ function displayChannels(feedName) {
   channelsDiv.id = channelsDivId;
   channelsDiv.style = "display: none;";
 
-  var ulId = `${feedName}-card-channel-list`;
-  var ul = document.getElementById(ulId);
+  let ulId = `${feedName}-card-channel-list`;
+  let ul = document.getElementById(ulId);
   if (!ul) {
     ul = document.createElement("ul");
   }
   ul.id = ulId;
 
   channelArray.forEach((channelHandle) => {
-    var liId = `${feedName}-card-${channelHandle}`;
+    let liId = `${feedName}-card-${channelHandle}`;
     if (document.getElementById(liId)) {
       return; // Skips if channel is already renderred
     }
 
-    var li = document.createElement("li");
+    let li = document.createElement("li");
     li.innerText = channelHandle;
     li.className = "feed-card-channels";
     li.id = liId;
 
-    var removeButton = document.createElement("button");
+    let removeButton = document.createElement("button");
     removeButton.className = "edit-channels-button";
     removeButton.innerText = "Remove";
     removeButton.addEventListener("click", (e) => {
@@ -405,21 +407,21 @@ function displayChannels(feedName) {
     channelsDiv.appendChild(ul);
   }
 
-  var addChannelFormId = `${feedName}-add-channel-form`;
+  let addChannelFormId = `${feedName}-add-channel-form`;
 
   if (!document.getElementById(addChannelFormId)) {
-    var addChannelForm = document.createElement("form");
+    let addChannelForm = document.createElement("form");
     addChannelForm.id = addChannelFormId;
 
-    var addChannelDiv = document.createElement("div");
+    let addChannelDiv = document.createElement("div");
     addChannelDiv.className = "add-channel-div";
 
-    var channelInput = document.createElement("input");
+    let channelInput = document.createElement("input");
     channelInput.type = "text";
     channelInput.id = `${feedName}-channel-input`;
     channelInput.placeholder = "Add channel handle...";
 
-    var submitButton = document.createElement("button");
+    let submitButton = document.createElement("button");
     submitButton.type = "submit";
     submitButton.textContent = "Add";
 
@@ -471,55 +473,59 @@ async function displayVideos(feedName) {
 
   console.log("Renderring videos for feed: ", feedName);
 
-  var innerVideosDiv = document.createElement("div");
+  let innerVideosDiv = document.createElement("div");
   innerVideosDiv.id = `${feedName}-videos-div`;
 
-  var videos = await fetchVideos(feedName); // async call in future
+  let videos = await fetchVideos(feedName); // async call in future
 
   // Creating video cards
-  videos.forEach((video) => {
-    var card = document.createElement("div");
-    card.className = "video-card";
+  if (videos) {
+    videos.forEach((video) => {
+      let card = document.createElement("div");
+      card.className = "video-card";
 
-    var title = document.createElement("h3");
-    var channel = document.createElement("h4");
-    var date = document.createElement("h4");
-    var thumbnail = document.createElement("img");
-    thumbnail.className = "thumbnail";
-    var aLink = document.createElement("a");
+      let title = document.createElement("h3");
+      let channel = document.createElement("h4");
+      let date = document.createElement("h4");
+      let thumbnail = document.createElement("img");
+      thumbnail.className = "thumbnail";
+      let aLink = document.createElement("a");
 
-    title.textContent = video.title;
-    channel.textContent = video.channel;
-    date.textContent = video.publishedAt;
-    thumbnail.src = video.thumbnailURL;
+      title.textContent = video.title;
+      channel.textContent = video.channel;
+      date.textContent = video.publishedAt;
+      thumbnail.src = video.thumbnailURL;
 
-    aLink.addEventListener("click", async (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      await chrome.tabs.query(
-        {
-          active: true,
-          currentWindow: true,
-        },
-        ([tab]) => {
-          chrome.tabs.update(tab.id, { url: video.videoURL });
-        }
-      );
+      aLink.addEventListener("click", async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        await chrome.tabs.query(
+          {
+            active: true,
+            currentWindow: true,
+          },
+          ([tab]) => {
+            chrome.tabs.update(tab.id, { url: video.videoURL });
+          }
+        );
+      });
+
+      let infoDiv = document.createElement("div");
+      infoDiv.className = "video-info";
+      infoDiv.appendChild(title);
+      infoDiv.appendChild(channel);
+      infoDiv.appendChild(date);
+
+      card.appendChild(thumbnail);
+      card.appendChild(infoDiv);
+
+      aLink.appendChild(card);
+
+      innerVideosDiv.appendChild(aLink);
     });
-
-    var infoDiv = document.createElement("div");
-    infoDiv.className = "video-info";
-    infoDiv.appendChild(title);
-    infoDiv.appendChild(channel);
-    infoDiv.appendChild(date);
-
-    card.appendChild(thumbnail);
-    card.appendChild(infoDiv);
-
-    aLink.appendChild(card);
-
-    innerVideosDiv.appendChild(aLink);
-  });
+  } else {
+    console.error("in displayVideos(): videos not defined");
+  }
 
   videosDiv.appendChild(innerVideosDiv);
 
@@ -527,8 +533,8 @@ async function displayVideos(feedName) {
 }
 
 function toggleChannels(feedName) {
-  var divId = `${feedName}-channel-list-div`;
-  var channelsDiv = document.getElementById(divId);
+  let divId = `${feedName}-channel-list-div`;
+  let channelsDiv = document.getElementById(divId);
   if (channelsDiv.style.display === "none") {
     channelsDiv.style.display = "block";
   } else {
@@ -556,15 +562,15 @@ function toggleAddFeedOff() {
 
 function toggleFeedsOn(feedName) {
   toggleVideosOff(feedName);
-  var divId = "feed-container";
-  var feedsDiv = document.getElementById(divId);
+  let divId = "feed-container";
+  let feedsDiv = document.getElementById(divId);
   feedsDiv.style.display = "block";
   feedsVisible = true;
 }
 
 function toggleFeedsOff() {
-  var divId = "feed-container";
-  var feedsDiv = document.getElementById(divId);
+  let divId = "feed-container";
+  let feedsDiv = document.getElementById(divId);
   feedsDiv.style.display = "none";
   feedsVisible = false;
 }
@@ -572,15 +578,15 @@ function toggleFeedsOff() {
 function toggleVideosOn(feedName) {
   toggleFeedsOff();
   toggleInnerVideosOn(feedName);
-  var divId = "video-container";
-  var videosContainer = document.getElementById(divId);
+  let divId = "video-container";
+  let videosContainer = document.getElementById(divId);
   videosContainer.style.display = "block";
   videosVisible = true;
 }
 
 function toggleVideosOff(feedName) {
-  var divId = "video-container";
-  var videosContainer = document.getElementById(divId);
+  let divId = "video-container";
+  let videosContainer = document.getElementById(divId);
   videosContainer.style.display = "none";
   if (feedName) {
     toggleInnerVideosOff(feedName);
@@ -589,70 +595,33 @@ function toggleVideosOff(feedName) {
 }
 
 function toggleInnerVideosOn(feedName) {
-  var divId = `${feedName}-videos-div`;
-  var innerVideosDiv = document.getElementById(divId);
+  let divId = `${feedName}-videos-div`;
+  let innerVideosDiv = document.getElementById(divId);
   innerVideosDiv.style.display = "block";
 }
 
 function toggleInnerVideosOff(feedName) {
-  var divId = `${feedName}-videos-div`;
-  var innerVideosDiv = document.getElementById(divId);
+  let divId = `${feedName}-videos-div`;
+  let innerVideosDiv = document.getElementById(divId);
   innerVideosDiv.style.display = "none";
 }
 
 function resetVideos(feedName) {
-  var innerVideosDiv = document.getElementById(`${feedName}-videos-div`);
+  let innerVideosDiv = document.getElementById(`${feedName}-videos-div`);
   if (innerVideosDiv) {
     innerVideosDiv.remove();
   }
   feedVideosDisplayed[feedName] = false;
 }
 
-function resetFeeds() {}
-
-async function removeChannel(feedName, channelHandle) {
-  // TODO Removes channel from the specified feed including removing from backend database
-  // Might want to add a "are you sure" popup
-  console.log("removed channel, handle: ", channelHandle);
+function refreshChannels(feedName) {
+  let channelsDiv = document.getElementById(`${feedName}-channel-list-div`);
+  if (channelsDiv) {
+    channelsDiv.innerHTML = "";
+    let newChannelsDiv = displayChannels(feedName);
+    channelsDiv.replaceWith(newChannelsDiv);
+  }
 }
-
-async function fetchFeeds() {
-  // TODO will fetch feedNames and their channels
-  console.log("fetch feeds call");
-}
-
-async function fetchChannels(feedName) {
-  // TODO will fetch channels for the given feedName and add them to feedMap
-  console.log("fetch channels call for feed: ", feedName);
-}
-
-async function fetchVideos(feedName) {
-  // TODO will fetch videos for the provided feed
-  console.log("fetch videos call for feed: ", feedName);
-
-  const videosKey = `${feedName}-videos`;
-  var videos;
-
-  await chrome.storage.session.get([videosKey]).then(async (result) => {
-    if (result[videosKey]) {
-      console.log(
-        "videos found in chrome.storage.session for feed: ",
-        feedName
-      );
-      videos = result[videosKey];
-    } else {
-      console.log(
-        "videos not found in storage, retrieving from backend, feed: ",
-        feedName
-      );
-      videos = await updateVideos(feedName);
-    }
-  });
-
-  return videos;
-}
-
-function clearUI() {}
 
 // ************* //
 // * API CALLS * //
@@ -690,7 +659,7 @@ async function sendUserIdToBackend(uid) {
 // Creates a new feed and adds it to the database
 async function addFeed(feedName) {
   // TODO adds the specified feed to the database and adds to the userFeeds map
-  var addFeedFormError = document.getElementById("add-feed-form-error");
+  let addFeedFormError = document.getElementById("add-feed-form-error");
   if (!feedName || feedName.length < 1) {
     console.error("Invalid feedName: ", feedName);
     addFeedFormError.textContent = "Invalid feed name";
@@ -752,8 +721,14 @@ async function addChannel(feedName, channelHandle) {
     if (response.ok) {
       const data = await response.json();
       console.log("addChannel(): Backend response:", data);
-      feedMap.get(feedName).push(channelHandle); // adds new feed to the feedMap
-      displayChannels(feedName);
+      console.log("this is the array in feedMap: ", feedMap.get(feedName));
+      let channels = feedMap.get(feedName) || [];
+      if (!channels.includes(channelHandle)) {
+        channels.push(channelHandle);
+        feedMap.set(feedName, channels);
+      }
+      refreshChannels(feedName);
+      // displayChannels(feedName);
     } else {
       const data = await response.json();
       console.log("addChannel(): Backend response:", data);
@@ -771,19 +746,164 @@ async function addChannel(feedName, channelHandle) {
   console.log("submitted add channel, handle: ", channelHandle);
 }
 
+// /feeds - GET
+// Retrieves all the users feeds and calls fetchChannels
+async function fetchFeeds() {
+  // Backend call
+  try {
+    const response = await fetch(`${BASE_URL}${PREFIX}/feeds`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Firebase-ID": auth.currentUser.uid,
+      },
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log("fetchFeeds(): Backend response:", data);
+      let feedNames = data.feedNames;
+      feedNames.forEach(async (feedName) => {
+        let emptyArray = [];
+        feedMap.set(feedName, emptyArray);
+        await fetchChannels(feedName);
+      });
+
+      // displayFeeds([...feedMap.keys()]);
+    } else {
+      const data = await response.json();
+      console.error("fetchFeeds(): Error Backend response:", data);
+      console.error("fetchFeeds(): Backend error:", response.statusText);
+      let errMessage = `Sorry, there was an issue, please try again later: ${response.statusText}`;
+      statusMessageDisplay(errMessage, 10);
+    }
+  } catch (error) {
+    let errMessage =
+      "Sorry, there was an issue, please restart the extension and try again.";
+    console.error("Error sending user ID to backend:", error);
+    statusMessageDisplay(errMessage, 10);
+  }
+
+  console.log("fetch feeds call");
+}
+
+async function fetchChannels(feedName) {
+  // Backend call
+  try {
+    const response = await fetch(
+      `${BASE_URL}${PREFIX}/channels?feedName=${feedName}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Firebase-ID": auth.currentUser.uid,
+        },
+      }
+    );
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log("fetchChannels(): Backend response:", data);
+      let channelHandles = data.channelHandles || [];
+      console.log(
+        "These are the channelHandles (should be array):",
+        channelHandles
+      );
+      feedMap.set(feedName, channelHandles);
+      refreshChannels(feedName);
+    } else {
+      const data = await response.json();
+      console.error("fetchChannels(): Error Backend response:", data);
+      console.error("fetchChannels(): Backend error:", response.statusText);
+      let errMessage = `Sorry, there was an issue, please try again later: ${response.statusText}`;
+      statusMessageDisplay(errMessage, 10);
+    }
+  } catch (error) {
+    let errMessage =
+      "Sorry, there was an issue, please restart the extension and try again.";
+    console.error("fetchChannels(): Error sending user ID to backend:", error);
+    statusMessageDisplay(errMessage, 10);
+  }
+
+  console.log("fetch channels call for feed: ", feedName);
+}
+
+async function removeChannel(feedName, channelHandle) {
+  // TODO Removes channel from the specified feed including removing from backend database
+  // Might want to add a "are you sure" popup
+  console.log("removed channel, handle: ", channelHandle);
+}
+
+// /videos - GET
+// Retrieves recent videos for the channels in the provided feed
+async function fetchVideos(feedName) {
+  // TODO will fetch videos for the provided feed
+  console.log("fetch videos call for feed: ", feedName);
+
+  const videosKey = `${feedName}-videos`;
+  let videos;
+
+  await chrome.storage.session.get([videosKey]).then(async (result) => {
+    if (result[videosKey]) {
+      console.log(
+        "videos found in chrome.storage.session for feed: ",
+        feedName
+      );
+      videos = result[videosKey];
+    } else {
+      console.log(
+        "videos not found in storage, retrieving from backend, feed: ",
+        feedName
+      );
+      videos = await updateVideos(feedName);
+    }
+  });
+
+  return videos;
+}
+
 // /videos - GET
 // Retrieves the videos for the specified feed
+// fetchVideos helper
 async function updateVideos(feedName) {
   const videosKey = `${feedName}-videos`;
-  var videos;
+  let videos;
 
-  //TODO fetch videos from backend
-  videos = testVideos; // temporary
+  // Backend call
+  try {
+    const response = await fetch(
+      `${BASE_URL}${PREFIX}/videos?feedName=${feedName}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Firebase-ID": auth.currentUser.uid,
+        },
+      }
+    );
 
-  let storageVideos = {};
-  storageVideos[videosKey] = videos;
-  chrome.storage.session.set(storageVideos);
-  console.log("videos stored in backend for feed: ", feedName);
+    if (response.ok) {
+      const data = await response.json();
+      console.log("updateVideos(): Backend response:", data);
+      videos = data.videos || [];
+      console.log("These are the videos (should be array):", videos);
+      let storageVideos = {};
+      storageVideos[videosKey] = videos;
+      chrome.storage.session.set(storageVideos);
+      console.log("videos stored in backend for feed: ", feedName);
+    } else {
+      const data = await response.json();
+      console.error("updateVideos(): Error Backend response:", data);
+      console.error("updateVideos(): Backend error:", response.statusText);
+      let errMessage = `Sorry, there was an issue, please try again later: ${response.statusText}`;
+      statusMessageDisplay(errMessage, 10);
+    }
+  } catch (error) {
+    let errMessage =
+      "Sorry, there was an issue, please restart the extension and try again.";
+    console.error("updateVideos(): Error sending user ID to backend:", error);
+    statusMessageDisplay(errMessage, 10);
+  }
 
   return videos;
 }
