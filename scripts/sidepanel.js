@@ -106,26 +106,22 @@ authButton.addEventListener("click", async () => {
   }
 });
 
-// Function to send user ID to backend via HTTPS
-async function sendUserIdToBackend(uid) {
-  try {
-    const response = await fetch(`${BASE_URL}${PREFIX}/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Firebase-ID": uid,
-      },
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      console.log("Backend response:", data);
-    } else {
-      console.error("Backend error:", response.statusText);
-    }
-  } catch (error) {
-    console.error("Error sending user ID to backend:", error);
+// Displays the message to the user for the specified amount of time (in seconds)
+async function statusMessageDisplay(message, time) {
+  var pauseTime;
+  if (time && time < 100) {
+    pauseTime = time * 1000;
+  } else {
+    pauseTime = 10000;
   }
+
+  if (message) {
+    appStatus.textContent = message;
+  }
+
+  setTimeout(() => {
+    appStatus.innerHTML = "";
+  }, pauseTime);
 }
 
 // Monitor authentication state
@@ -307,11 +303,18 @@ let feedVideosDisplayed = {};
 
 function displayFeeds(feedNames) {
   var cardsDiv = document.getElementById("cards-div");
-  cardsDiv.innerHTML = "";
+  // cardsDiv.innerHTML = "";
 
+  // Creating card for each feed
   feedNames.forEach((feedName) => {
+    let cardId = `${feedName}-card`;
+    if (document.getElementById(cardId)) {
+      return; // Skips to the next feedName
+    }
+
     var card = document.createElement("div");
     card.className = "card";
+    card.id = cardId;
 
     var cardHeader = document.createElement("div");
     cardHeader.className = "card-header";
@@ -583,6 +586,8 @@ function resetVideos(feedName) {
   feedVideosDisplayed[feedName] = false;
 }
 
+function resetFeeds() {}
+
 async function removeChannel(feedName, channelHandle) {
   // TODO Removes channel from the specified feed including removing from backend database
   // Might want to add a "are you sure" popup
@@ -592,24 +597,6 @@ async function removeChannel(feedName, channelHandle) {
 async function addChannel(feedName, channelHandle) {
   //TODO adds channel to the specified field including posting it to backend
   console.log("submitted add channel, handle: ", channelHandle);
-}
-
-async function addFeed(feedName) {
-  // TODO adds the specified feed to the database and adds to the userFeeds map
-  // TODO also calls fetchChannels!!!
-  var addFeedFormError = document.getElementById("add-feed-form-error");
-  if (!feedName || feedName.length < 1) {
-    console.error("Invalid feedName: ", feedName);
-    addFeedFormError.textContent = "Invalid feed name";
-    addFeedFormError.style.display = "block";
-    return;
-  }
-
-  console.log("Submitted add feed form: ", feedName);
-  addFeedFormError.textContent = "";
-  addFeedFormError.style.display = "none";
-  addFeedForm.reset();
-  toggleAddFeedOff();
 }
 
 async function fetchFeeds() {
@@ -648,6 +635,89 @@ async function fetchVideos(feedName) {
   return videos;
 }
 
+function clearUI() {}
+
+// ************* //
+// * API CALLS * //
+// ************* //
+
+// /login - POST
+// Function to send user ID to backend via HTTPS
+async function sendUserIdToBackend(uid) {
+  try {
+    const response = await fetch(`${BASE_URL}${PREFIX}/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Firebase-ID": uid,
+      },
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log("Backend response:", data);
+    } else {
+      console.error("Backend error:", response.statusText);
+      let errMessage = "Sorry, there was an issue on our end. Try again later.";
+      statusMessageDisplay(errMessage, 10);
+    }
+  } catch (error) {
+    let errMessage =
+      "Sorry, there was an issue, please restart the extension and try again.";
+    console.error("Error sending user ID to backend:", error);
+    statusMessageDisplay(errMessage, 10);
+  }
+}
+
+// /feed - POST
+// Creates a new feed and adds it to the database
+async function addFeed(feedName) {
+  // TODO adds the specified feed to the database and adds to the userFeeds map
+  // TODO also calls fetchChannels!!!
+  var addFeedFormError = document.getElementById("add-feed-form-error");
+  if (!feedName || feedName.length < 1) {
+    console.error("Invalid feedName: ", feedName);
+    addFeedFormError.textContent = "Invalid feed name";
+    addFeedFormError.style.display = "block";
+    return;
+  }
+
+  // Backend call
+  try {
+    const response = await fetch(`${BASE_URL}${PREFIX}/feed`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Firebase-ID": auth.currentUser.uid,
+      },
+      body: JSON.stringify({ feedName: feedName }),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log("addFeed(): Backend response:", data);
+      feedMap.set(feedName, []); // adds new feed to the feedMap
+      displayFeeds([...feedMap.keys()]);
+    } else {
+      console.error("addFeed(): Backend error:", response.statusText);
+      let errMessage = `Sorry, there was an issue, please try again later: ${response.statusText}`;
+      statusMessageDisplay(errMessage, 10);
+    }
+  } catch (error) {
+    let errMessage =
+      "Sorry, there was an issue, please restart the extension and try again.";
+    console.error("Error sending user ID to backend:", error);
+    statusMessageDisplay(errMessage, 10);
+  }
+
+  addFeedFormError.textContent = "";
+  addFeedFormError.style.display = "none";
+  addFeedForm.reset();
+  toggleAddFeedOff();
+}
+
+// /videos - GET
+// Retrieves the videos for the specified feed
 async function updateVideos(feedName) {
   const videosKey = `${feedName}-videos`;
   var videos;
@@ -663,4 +733,4 @@ async function updateVideos(feedName) {
   return videos;
 }
 
-function clearUI() {}
+// * End API CALLS //
