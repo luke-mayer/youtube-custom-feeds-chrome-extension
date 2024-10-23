@@ -327,15 +327,25 @@ function displayFeeds(feedNames) {
     cardHeader.className = "card-header";
 
     let feedTitle = document.createElement("h3");
-    feedTitle.innerText = feedName;
+    feedTitle.textContent = feedName;
     cardHeader.appendChild(feedTitle);
 
+    let editDeleteDiv = document.createElement("div");
+    editDeleteDiv.className = "edit-delete-div";
+
     let editButton = document.createElement("button");
-    editButton.innerText = "Edit Channels";
+    editButton.textContent = "Channels";
     editButton.className = "edit-channels-button";
     editButton.id = `edit-channels-${feedName}`;
-    cardHeader.appendChild(editButton);
+    editDeleteDiv.appendChild(editButton);
 
+    let deleteFeedLink = document.createElement("a");
+    deleteFeedLink.innerHTML = "<h3>X</h3>";
+    deleteFeedLink.className = "delete-feed-link";
+    deleteFeedLink.href = "#";
+    editDeleteDiv.appendChild(deleteFeedLink);
+
+    cardHeader.appendChild(editDeleteDiv);
     card.appendChild(cardHeader);
 
     let videosButton = document.createElement("button");
@@ -360,6 +370,11 @@ function displayFeeds(feedNames) {
       e.stopPropagation();
       await displayVideos(feedName);
       toggleVideosOn(feedName);
+    });
+
+    deleteFeedLink.addEventListener("click", (e) => {
+      e.stopPropagation();
+      removeFeed(feedName);
     });
   });
 }
@@ -625,6 +640,18 @@ function refreshChannels(feedName) {
     channelsDiv.innerHTML = "";
     let newChannelsDiv = displayChannels(feedName);
     channelsDiv.replaceWith(newChannelsDiv);
+  }
+}
+
+function removeFeedElement(feedName) {
+  let cardsDiv = document.getElementById("cards-div");
+
+  if (cardsDiv) {
+    let cardId = `${feedName}-card`;
+    let card = document.getElementById(cardId);
+    if (card) {
+      cardsDiv.removeChild(card);
+    }
   }
 }
 
@@ -911,7 +938,6 @@ async function updateVideos(feedName) {
 // /channel - DELETE
 // removes the channelHandle from the specified feed, including removing it from the backend
 async function removeChannel(feedName, channelHandle) {
-  // Might want to add a "are you sure" popup
   if (
     confirm(
       `Are you sure you want to remove ${channelHandle} from ${feedName}?`
@@ -958,6 +984,48 @@ async function removeChannel(feedName, channelHandle) {
         "removeChannel(): Error sending request to backend:",
         error
       );
+      statusMessageDisplay(errMessage, 10);
+    }
+  }
+}
+
+// /feed - DELETE
+// removes feed, including deleting feed and all its channels from the backend
+async function removeFeed(feedName) {
+  if (confirm(`Are you sure you want to remove ${feedName}?`)) {
+    // Backend call
+    try {
+      const response = await fetch(
+        `${BASE_URL}${PREFIX}/feed?feedName=${feedName}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            "Firebase-ID": auth.currentUser.uid,
+          },
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("removeFeed(): Backend response:", data);
+
+        feedMap.delete(feedName);
+        removeFeedElement(feedName);
+        let feeds = [...feedMap.keys()];
+        displayFeeds(feeds); // re-renderring channels for the feed
+        console.log("removed feed: ", feedName);
+      } else {
+        const data = await response.json();
+        console.error("removeFeed(): Error Backend response:", data);
+        console.error("removeFeed(): Backend error:", response.statusText);
+        let errMessage = `Sorry, there was an issue, please try again later: ${response.statusText}`;
+        statusMessageDisplay(errMessage, 10);
+      }
+    } catch (error) {
+      let errMessage =
+        "Sorry, there was an issue, please restart the extension and try again.";
+      console.error("removeFeed(): Error sending request to backend:", error);
       statusMessageDisplay(errMessage, 10);
     }
   }

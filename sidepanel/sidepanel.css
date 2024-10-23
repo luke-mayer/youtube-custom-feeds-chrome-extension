@@ -70,6 +70,10 @@ body {
   .card {
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
     transition: 0.3s;
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin: 10px 0;
+    background-color: #f9f9f9;
   }
   
   /* On mouse-over, add a deeper shadow */
@@ -82,12 +86,9 @@ body {
     justify-content: space-between;
     align-items: center;
   }
-  
-  .card {
-    border: 1px solid #ccc;
-    padding: 10px;
-    margin: 10px 0;
-    background-color: #f9f9f9;
+
+  .card-header h3 {
+    padding-right: 4px;
   }
 
   .video-card:hover {
@@ -163,6 +164,21 @@ body {
 
   .add-channel-div button:hover {
     background-color: #0056b3;
+  }
+
+  #video-header {
+    text-align: center;
+    padding: 4px;
+  }
+
+  .edit-delete-div {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
+
+  .edit-delete-div a {
+    padding-left: 4px;
   }
 
 
