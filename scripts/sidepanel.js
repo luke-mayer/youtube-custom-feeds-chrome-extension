@@ -33,6 +33,8 @@ let signedIn = false;
 let feedsVisible = false;
 let videosVisible = false;
 
+let feedMap = new Map();
+
 // Toggle between Sign In and Sign Up
 toggleLink.addEventListener("click", (e) => {
   e.preventDefault();
@@ -135,6 +137,9 @@ onAuthStateChanged(auth, (user) => {
   }
 });
 
+// * TEST CODE HERE
+/* TEST CODE
+
 const testChannels1 = [
   "feed1 channel1",
   "feed1 channel2",
@@ -164,7 +169,6 @@ const testChannels4 = [
   "feed4 channel5",
 ];
 
-let feedMap = new Map();
 // feedMap.set("Feed One", testChannels1);
 //feedMap.set("Feed Two", testChannels2);
 //feedMap.set("Feed Three", testChannels3);
@@ -275,6 +279,7 @@ const testVideos = [
 ];
 
 */
+
 addFeedButton.addEventListener("click", (e) => {
   e.stopPropagation();
   toggleAddFeedOn();
@@ -543,8 +548,8 @@ function toggleChannels(feedName) {
 }
 
 function toggleVideos() {
-  var divId = "video-container";
-  var videosContainer = document.getElementById(divId);
+  let divId = "video-container";
+  let videosContainer = document.getElementById(divId);
   if (videosContainer.style.display === "none") {
     videosContainer.style.display = "block";
   } else {
@@ -658,7 +663,6 @@ async function sendUserIdToBackend(uid) {
 // /feed - POST
 // Creates a new feed and adds it to the database
 async function addFeed(feedName) {
-  // TODO adds the specified feed to the database and adds to the userFeeds map
   let addFeedFormError = document.getElementById("add-feed-form-error");
   if (!feedName || feedName.length < 1) {
     console.error("Invalid feedName: ", feedName);
@@ -828,16 +832,9 @@ async function fetchChannels(feedName) {
   console.log("fetch channels call for feed: ", feedName);
 }
 
-async function removeChannel(feedName, channelHandle) {
-  // TODO Removes channel from the specified feed including removing from backend database
-  // Might want to add a "are you sure" popup
-  console.log("removed channel, handle: ", channelHandle);
-}
-
 // /videos - GET
 // Retrieves recent videos for the channels in the provided feed
 async function fetchVideos(feedName) {
-  // TODO will fetch videos for the provided feed
   console.log("fetch videos call for feed: ", feedName);
 
   const videosKey = `${feedName}-videos`;
@@ -887,14 +884,17 @@ async function updateVideos(feedName) {
       console.log("updateVideos(): Backend response:", data);
       videos = data.videos || [];
       console.log("These are the videos (should be array):", videos);
+
       let storageVideos = {};
       storageVideos[videosKey] = videos;
       chrome.storage.session.set(storageVideos);
+
       console.log("videos stored in backend for feed: ", feedName);
     } else {
       const data = await response.json();
       console.error("updateVideos(): Error Backend response:", data);
       console.error("updateVideos(): Backend error:", response.statusText);
+
       let errMessage = `Sorry, there was an issue, please try again later: ${response.statusText}`;
       statusMessageDisplay(errMessage, 10);
     }
@@ -906,6 +906,61 @@ async function updateVideos(feedName) {
   }
 
   return videos;
+}
+
+// /channel - DELETE
+// removes the channelHandle from the specified feed, including removing it from the backend
+async function removeChannel(feedName, channelHandle) {
+  // Might want to add a "are you sure" popup
+  if (
+    confirm(
+      `Are you sure you want to remove ${channelHandle} from ${feedName}?`
+    )
+  ) {
+    // Backend call
+    try {
+      const response = await fetch(
+        `${BASE_URL}${PREFIX}/channel?feedName=${feedName}&channelHandle=${channelHandle}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            "Firebase-ID": auth.currentUser.uid,
+          },
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("removeChannel(): Backend response:", data);
+
+        // Removing channel from feedMap
+        let channels = feedMap.get(feedName) || [];
+        let indx = channels.indexOf(channelHandle);
+        if (indx > -1) {
+          channels.splice(indx, 1);
+        }
+        feedMap.set(feedName, channels);
+
+        refreshChannels(feedName); // re-renderring channels for the feed
+        console.log("removed channel, handle: ", channelHandle);
+      } else {
+        const data = await response.json();
+        console.error("removeChannel(): Error Backend response:", data);
+        console.error("removeChannel(): Backend error:", response.statusText);
+        let errMessage = `Sorry, there was an issue, please try again later: ${response.statusText}`;
+        statusMessageDisplay(errMessage, 10);
+      }
+    } catch (error) {
+      let errMessage =
+        "Sorry, there was an issue, please restart the extension and try again.";
+      console.error(
+        "removeChannel(): Error sending request to backend:",
+        error
+      );
+      statusMessageDisplay(errMessage, 10);
+    }
+  }
 }
 
 // * End API CALLS //
