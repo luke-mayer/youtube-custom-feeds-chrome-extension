@@ -94,7 +94,7 @@ authButton.addEventListener("click", async () => {
     });
 
     // Send user ID to backend
-    sendUserIdToBackend(user.uid);
+    await sendUserIdToBackend(user.uid);
 
     // Update UI
     statusText.style.color = "green";
@@ -109,12 +109,18 @@ authButton.addEventListener("click", async () => {
 });
 
 // Displays the message to the user for the specified amount of time (in seconds)
-async function statusMessageDisplay(message, time) {
+async function statusMessageDisplay(message, time, blue) {
   let pauseTime;
   if (time && time < 100) {
     pauseTime = time * 1000;
   } else {
     pauseTime = 10000;
+  }
+
+  if (blue) {
+    appStatus.style.color = "blue";
+  } else {
+    appStatus.style.color = "red";
   }
 
   if (message) {
@@ -127,9 +133,10 @@ async function statusMessageDisplay(message, time) {
 }
 
 // Monitor authentication state
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
   if (user) {
     console.log("User is signed in");
+    await sendUserIdToBackend(user.uid);
     signedIntoFeeds();
   } else {
     console.log("No user is signed in.");
@@ -432,6 +439,7 @@ function displayChannels(feedName) {
   if (!document.getElementById(addChannelFormId)) {
     let addChannelForm = document.createElement("form");
     addChannelForm.id = addChannelFormId;
+    addChannelForm.className = "add-channel-form";
 
     let addChannelDiv = document.createElement("div");
     addChannelDiv.className = "add-channel-div";
@@ -440,6 +448,7 @@ function displayChannels(feedName) {
     channelInput.type = "text";
     channelInput.id = `${feedName}-channel-input`;
     channelInput.placeholder = "Add channel handle...";
+    channelInput.autocomplete = "off";
 
     let submitButton = document.createElement("button");
     submitButton.type = "submit";
@@ -449,6 +458,11 @@ function displayChannels(feedName) {
     addChannelDiv.appendChild(submitButton);
 
     addChannelForm.appendChild(addChannelDiv);
+
+    let channelHandleInstructions = document.createElement("p");
+    channelHandleInstructions.textContent =
+      "Input the channel handle (not the channel name). The channel handle begins with @.";
+    addChannelForm.appendChild(channelHandleInstructions);
 
     addChannelForm.onsubmit = async (e) => {
       e.preventDefault();
@@ -677,13 +691,13 @@ async function sendUserIdToBackend(uid) {
     } else {
       console.error("Backend error:", response.statusText);
       let errMessage = "Sorry, there was an issue on our end. Try again later.";
-      statusMessageDisplay(errMessage, 10);
+      statusMessageDisplay(errMessage, 10, false);
     }
   } catch (error) {
     let errMessage =
       "Sorry, there was an issue, please restart the extension and try again.";
     console.error("Error sending user ID to backend:", error);
-    statusMessageDisplay(errMessage, 10);
+    statusMessageDisplay(errMessage, 10, false);
   }
 }
 
@@ -717,13 +731,13 @@ async function addFeed(feedName) {
     } else {
       console.error("addFeed(): Backend error:", response.statusText);
       let errMessage = `Sorry, there was an issue, please try again later: ${response.statusText}`;
-      statusMessageDisplay(errMessage, 10);
+      statusMessageDisplay(errMessage, 10, false);
     }
   } catch (error) {
     let errMessage =
       "Sorry, there was an issue, please restart the extension and try again.";
     console.error("Error sending user ID to backend:", error);
-    statusMessageDisplay(errMessage, 10);
+    statusMessageDisplay(errMessage, 10, false);
   }
 
   addFeedFormError.textContent = "";
@@ -759,19 +773,21 @@ async function addChannel(feedName, channelHandle) {
         feedMap.set(feedName, channels);
       }
       refreshChannels(feedName);
-      // displayChannels(feedName);
+
+      let message = `Channel ${channelHandle} successfully added to ${feedName}. Refresh the feed to see new videos.`;
+      statusMessageDisplay(message, 10, true);
     } else {
       const data = await response.json();
       console.log("addChannel(): Backend response:", data);
       console.error("addChannel(): Backend error:", response.statusText);
-      let errMessage = `Sorry, there was an issue, please try again later: ${response.statusText}`;
-      statusMessageDisplay(errMessage, 10);
+      let errMessage = `Sorry, there was an issue. Make sure the channel handle is spelled correctly and the @ sign is included. Check the channel's page to find the handle.`;
+      statusMessageDisplay(errMessage, 10, false);
     }
   } catch (error) {
     let errMessage =
       "Sorry, there was an issue, please restart the extension and try again.";
     console.error("Error sending user ID to backend:", error);
-    statusMessageDisplay(errMessage, 10);
+    statusMessageDisplay(errMessage, 10, false);
   }
 
   console.log("submitted add channel, handle: ", channelHandle);
@@ -793,7 +809,7 @@ async function fetchFeeds() {
     if (response.ok) {
       const data = await response.json();
       console.log("fetchFeeds(): Backend response:", data);
-      let feedNames = data.feedNames;
+      let feedNames = data.feedNames || [];
       feedNames.forEach(async (feedName) => {
         let emptyArray = [];
         feedMap.set(feedName, emptyArray);
@@ -865,7 +881,7 @@ async function fetchVideos(feedName) {
   console.log("fetch videos call for feed: ", feedName);
 
   const videosKey = `${feedName}-videos`;
-  let videos;
+  let videos = [];
 
   await chrome.storage.session.get([videosKey]).then(async (result) => {
     if (result[videosKey]) {
