@@ -1,12 +1,28 @@
 /* /sidepanel/sidepanel.css */
 body {
     font-family: Arial, sans-serif;
-    /* margin: 20px; */
   }
 
   .dark-mode {
     background-color: #282828;
     color: white;
+  }
+
+  button {
+    border-radius: 4px;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+    font-weight: bold;
+    &:hover {
+      background-color: #51b300;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+  }
+
+  .remove-button {
+    &:hover {
+      background-color: #b80c06;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
   }
 
   #extension-title {
@@ -17,19 +33,6 @@ body {
     max-width: 300px;
     margin: auto;
   }
-  
-  /*
-  input {
-    width: 100%;
-    padding: 8px;
-    margin: 8px 0;
-  }
-  
-  button {
-    width: 100%;
-    padding: 8px;
-  }
-  */
 
   span {
     display: block;
@@ -74,12 +77,17 @@ body {
     padding: 10px;
     margin: 10px 0;
     background-color: #f9f9f9;
+    border-radius: 8px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+    }
   }
+
+  
   
   /* On mouse-over, add a deeper shadow */
-  .card:hover {
-    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
-  }
 
   .card-header {
     display: flex;
@@ -91,12 +99,8 @@ body {
     padding-right: 4px;
   }
 
-  .video-card:hover {
-    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
-  }
-
   .video-card {
-    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.25);
     transition: 0.3s;
 
     display: flex;
@@ -104,6 +108,13 @@ body {
     padding: 0;
     margin: 10px 0;
     background-color: #f9f9f9;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 12px rgba(0, 0, 0, 0.25);
+    }
   }
 
   .video-info {
@@ -154,10 +165,10 @@ body {
     flex: 1;
   }
 
+
   .add-channel-div button {
     padding: 5px 10px;
     background-color: #007bff;
-    color: white;
     border: none;
     cursor: pointer;
   }
@@ -165,7 +176,7 @@ body {
   .add-channel-div button:hover {
     background-color: #0056b3;
   }
-
+  
   #video-header {
     text-align: center;
     padding: 4px;

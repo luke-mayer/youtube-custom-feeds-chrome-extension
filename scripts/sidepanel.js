@@ -419,7 +419,7 @@ function displayChannels(feedName) {
     li.id = liId;
 
     let removeButton = document.createElement("button");
-    removeButton.className = "edit-channels-button";
+    removeButton.className = "remove-button";
     removeButton.innerText = "Remove";
     removeButton.addEventListener("click", (e) => {
       e.stopPropagation();
@@ -461,7 +461,7 @@ function displayChannels(feedName) {
 
     let channelHandleInstructions = document.createElement("p");
     channelHandleInstructions.textContent =
-      "Input the channel handle (not the channel name). The channel handle begins with @.";
+      "Input the channel handle (not the channel name). The channel handle begins with @. It can be found on a channel's page underneath the channel name.";
     addChannelForm.appendChild(channelHandleInstructions);
 
     addChannelForm.onsubmit = async (e) => {
