@@ -13,7 +13,7 @@ body {
     transition: background-color 0.2s ease, box-shadow 0.2s ease;
     font-weight: bold;
     &:hover {
-      background-color: #51b300;
+      background-color: #007bff;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
   }
@@ -32,6 +32,10 @@ body {
   #auth-container {
     max-width: 300px;
     margin: auto;
+  }
+
+  #disclosure {
+    text-align: center;
   }
 
   span {
