@@ -2,7 +2,7 @@
 
 import { signUp, signIn } from "./auth.js";
 import { auth } from "../firebase/firebase-init.js";
-import { onAuthStateChanged } from "../firebase/firebase-auth.js";
+import { onAuthStateChanged, deleteUser } from "../firebase/firebase-auth.js";
 import { BASE_URL } from "../firebase/firebase-secrets.js";
 
 const PREFIX = "/api/v1";
@@ -21,12 +21,13 @@ const statusText = document.getElementById("status");
 const appStatus = document.getElementById("app-status");
 const backToFeedsButton = document.getElementById("back-to-feeds-button");
 const addFeedButton = document.getElementById("add-feed-button");
-const signOutButton = document.getElementById("sign-out-button");
 const addFeedForm = document.getElementById("add-feed-form");
 const videoHeaderContainer = document.getElementById("video-header-container");
 const videoHeader = document.getElementById("video-header");
 const refreshVideosButton = document.getElementById("refresh-videos-button");
 const videosDiv = document.getElementById("videos-div");
+const signOutLink = document.getElementById("sign-out-link");
+const deleteAccountLink = document.getElementById("delete-account-link");
 
 let isSignIn = true;
 let signedIn = false;
@@ -58,9 +59,9 @@ function updateAuthMode() {
   });
 }
 
-signOutButton.addEventListener("click", async (e) => {
+signOutLink.addEventListener("click", async (e) => {
   e.stopPropagation();
-  console.log("In signOutButton event");
+  console.log("In signOutLink event");
   await auth
     .signOut()
     .then(() => {
@@ -73,6 +74,12 @@ signOutButton.addEventListener("click", async (e) => {
       appStatus.textContent =
         "Sorry, there was an issue signing out, try disabling the extensiom.";
     });
+});
+
+// ! DELETES USER ACCOUNT
+deleteAccountLink.addEventListener("click", async (e) => {
+  e.stopPropagation();
+  console.log("In deleteAccountLink event");
 });
 
 authButton.addEventListener("click", async () => {
@@ -143,149 +150,6 @@ onAuthStateChanged(auth, async (user) => {
     // Maybe create function to gurrantee that everything is turned off besides sign in form
   }
 });
-
-// * TEST CODE HERE
-/* TEST CODE
-
-const testChannels1 = [
-  "feed1 channel1",
-  "feed1 channel2",
-  "feed1 channel3",
-  "feed1 channel4",
-  "feed1 channel5",
-];
-const testChannels2 = [
-  "feed2 channel1",
-  "feed2 channel2",
-  "feed2 channel3",
-  "feed2 channel4",
-  "feed2 channel5",
-];
-const testChannels3 = [
-  "feed3 channel1",
-  "feed3 channel2",
-  "feed3 channel3",
-  "feed3 channel4",
-  "feed3 channel5",
-];
-const testChannels4 = [
-  "feed4 channel1",
-  "feed4 channel2",
-  "feed4 channel3",
-  "feed4 channel4",
-  "feed4 channel5",
-];
-
-// feedMap.set("Feed One", testChannels1);
-//feedMap.set("Feed Two", testChannels2);
-//feedMap.set("Feed Three", testChannels3);
-//feedMap.set("Feed Four", testChannels4);
-
-/*
-const testVideo1 = {
-  channel: "channel 1",
-  title: "title 1",
-  id: "id 1",
-  thumbnailURL: "http://i3.ytimg.com/vi/Z5-E4oXsCGk/hqdefault.jpg",
-  publishedAt: "publishedAt 1",
-  videoURL: "https://www.youtube.com/watch?v=Z5-E4oXsCGk&t=12s",
-};
-
-const testVideo2 = {
-  channel: "channel 2",
-  title: "title 2",
-  id: "id 2",
-  thumbnailURL: "http://i3.ytimg.com/vi/Z5-E4oXsCGk/hqdefault.jpg",
-  publishedAt: "publishedAt 2",
-  videoURL: "https://www.youtube.com/watch?v=Z5-E4oXsCGk&t=12s",
-};
-
-const testVideo3 = {
-  channel: "channel 3",
-  title: "title 3",
-  id: "id 3",
-  thumbnailURL: "http://i3.ytimg.com/vi/Z5-E4oXsCGk/hqdefault.jpg",
-  publishedAt: "publishedAt 3",
-  videoURL: "https://www.youtube.com/watch?v=Z5-E4oXsCGk&t=12s",
-};
-
-const testVideo4 = {
-  channel: "channel 4",
-  title: "title 4",
-  id: "id 4",
-  thumbnailURL: "http://i3.ytimg.com/vi/Z5-E4oXsCGk/hqdefault.jpg",
-  publishedAt: "publishedAt 4",
-  videoURL: "https://www.youtube.com/watch?v=Z5-E4oXsCGk&t=12s",
-};
-
-const testVideo5 = {
-  channel: "channel 5",
-  title: "title 5",
-  id: "id 5",
-  thumbnailURL: "http://i3.ytimg.com/vi/Z5-E4oXsCGk/hqdefault.jpg",
-  publishedAt: "publishedAt 5",
-  videoURL: "https://www.youtube.com/watch?v=Z5-E4oXsCGk&t=12s",
-};
-
-const testVideo6 = {
-  channel: "channel 6",
-  title: "title 6",
-  id: "id 6",
-  thumbnailURL: "http://i3.ytimg.com/vi/Z5-E4oXsCGk/hqdefault.jpg",
-  publishedAt: "publishedAt 6",
-  videoURL: "https://www.youtube.com/watch?v=Z5-E4oXsCGk&t=12s",
-};
-
-const testVideo7 = {
-  channel: "channel 7",
-  title: "title 7",
-  id: "id 7",
-  thumbnailURL: "http://i3.ytimg.com/vi/Z5-E4oXsCGk/hqdefault.jpg",
-  publishedAt: "publishedAt 7",
-  videoURL: "https://www.youtube.com/watch?v=Z5-E4oXsCGk&t=12s",
-};
-
-const testVideo8 = {
-  channel: "channel 8",
-  title: "title 8",
-  id: "id 8",
-  thumbnailURL: "http://i3.ytimg.com/vi/Z5-E4oXsCGk/hqdefault.jpg",
-  publishedAt: "publishedAt 8",
-  videoURL: "https://www.youtube.com/watch?v=Z5-E4oXsCGk&t=12s",
-};
-
-const testVideo9 = {
-  channel: "channel 9",
-  title: "title 9",
-  id: "id 9",
-  thumbnailURL: "http://i3.ytimg.com/vi/Z5-E4oXsCGk/hqdefault.jpg",
-  publishedAt: "publishedAt 9",
-  videoURL: "https://www.youtube.com/watch?v=Z5-E4oXsCGk&t=12s",
-};
-
-const testVideo10 = {
-  channel: "channel 10",
-  title: "title 10",
-  id: "id 10",
-  thumbnailURL: "http://i3.ytimg.com/vi/Z5-E4oXsCGk/hqdefault.jpg",
-  publishedAt: "publishedAt 10",
-  videoURL: "https://www.youtube.com/watch?v=Z5-E4oXsCGk&t=12s",
-};
-
-const testVideos = [
-  testVideo1,
-  testVideo2,
-  testVideo3,
-  testVideo4,
-  testVideo5,
-  testVideo6,
-  testVideo7,
-  testVideo8,
-  testVideo9,
-  testVideo10,
-];
-
-*/
 
 addFeedButton.addEventListener("click", (e) => {
   e.stopPropagation();
