@@ -9,7 +9,6 @@
     "https://youtube-custom-feeds-865842770127.us-east4.run.app/*"
   ],
   "action": {
-    "default_popup": "hello.html",
     "default_icon": {
       "16": "images/icon.png",
       "32": "images/icon.png",

@@ -65,14 +65,14 @@ signOutLink.addEventListener("click", async (e) => {
   await auth
     .signOut()
     .then(() => {
-      console.log("Logged out successfully???");
+      console.log("Logged out successfully");
       signedOutFeeds();
     })
     .catch((error) => {
       console.error(`error signing user out: ${error.message}`);
-      appStatus.style.color = "red";
-      appStatus.textContent =
+      let message =
         "Sorry, there was an issue signing out, try disabling the extensiom.";
+      statusMessageDisplay(message, false);
     });
 });
 
@@ -80,6 +80,23 @@ signOutLink.addEventListener("click", async (e) => {
 deleteAccountLink.addEventListener("click", async (e) => {
   e.stopPropagation();
   console.log("In deleteAccountLink event");
+  let userId = auth.currentUser.uid;
+  await deleteUserAccount(userId);
+  deleteUser(auth.currentUser)
+    .then(() => {
+      console.log("User account successfully deleted");
+      let message = "User account successfully deleted.";
+      statusMessageDisplay(message, 30, true);
+    })
+    .catch((error) => {
+      console.error(
+        "Error occurred trying to delete user account from Firebase Authentication: ",
+        error.message
+      );
+      let message =
+        "An error occurred trying to delete your account from Firebase Authentication. Please try again in a few minutes. If you still see this message after multiple attempts, contact support directly.";
+      statusMessageDisplay(message, 30, false);
+    });
 });
 
 authButton.addEventListener("click", async () => {
@@ -96,18 +113,20 @@ authButton.addEventListener("click", async () => {
     }
 
     // Store user ID locally
+    /*
     chrome.storage.local.set({ uid: user.uid }, () => {
       console.log("User ID stored locally.");
     });
+    */
 
     // Send user ID to backend
-    await sendUserIdToBackend(user.uid);
+    //await sendUserIdToBackend(user.uid);
 
     // Update UI
     statusText.style.color = "green";
     statusText.textContent = `Welcome, ${user.email}!`;
     // Optionally, hide auth UI or show logged-in state
-    signedIntoFeeds();
+    //signedIntoFeeds();
   } catch (error) {
     console.error("Authentication error:", error);
     statusText.style.color = "red";
@@ -147,6 +166,7 @@ onAuthStateChanged(auth, async (user) => {
     signedIntoFeeds();
   } else {
     console.log("No user is signed in.");
+    signedOutFeeds();
     // Maybe create function to gurrantee that everything is turned off besides sign in form
   }
 });
@@ -174,6 +194,7 @@ async function signedIntoFeeds() {
 function signedOutFeeds() {
   toggleFeedsOff();
   authContainer.style.display = "block";
+  resetFeeds();
 }
 
 // Used to keep track of which feeds' videos have already been rendered
@@ -440,16 +461,6 @@ function toggleChannels(feedName) {
   }
 }
 
-function toggleVideos() {
-  let divId = "video-container";
-  let videosContainer = document.getElementById(divId);
-  if (videosContainer.style.display === "none") {
-    videosContainer.style.display = "block";
-  } else {
-    videosContainer.style.display = "none";
-  }
-}
-
 function toggleAddFeedOn() {
   addFeedContainer.style.display = "block";
 }
@@ -521,6 +532,16 @@ function refreshChannels(feedName) {
   }
 }
 
+// Removes all feed card elements, clears the way for a fresh login.
+// Clears feedMap
+function resetFeeds() {
+  let feedCardsDiv = document.getElementById("cards-div");
+  if (feedCardsDiv) {
+    feedCardsDiv.innerHTML = "";
+  }
+  feedMap.clear();
+}
+
 function removeFeedElement(feedName) {
   let cardsDiv = document.getElementById("cards-div");
 
@@ -554,8 +575,8 @@ async function sendUserIdToBackend(uid) {
       console.log("Backend response:", data);
     } else {
       console.error("Backend error:", response.statusText);
-      let errMessage = "Sorry, there was an issue on our end. Try again later.";
-      statusMessageDisplay(errMessage, 10, false);
+      // let errMessage = "Sorry, there was an issue on our end. Try again later.";
+      // statusMessageDisplay(errMessage, 10, false);
     }
   } catch (error) {
     let errMessage =
@@ -906,6 +927,44 @@ async function removeFeed(feedName) {
       let errMessage =
         "Sorry, there was an issue, please restart the extension and try again.";
       console.error("removeFeed(): Error sending request to backend:", error);
+      statusMessageDisplay(errMessage, 10);
+    }
+  }
+}
+
+// /user - DELETE
+// deletes user, including deleting all their feeds from the backend
+async function deleteUserAccount(userId) {
+  if (
+    confirm(
+      "Are you sure you want to delete your account? This will permanantly delete your account including all of your created feeds. You can make a new account, but you will not be able to recover your feeds."
+    )
+  ) {
+    // Backend call
+    try {
+      const response = await fetch(`${BASE_URL}${PREFIX}/user`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          "Firebase-ID": `${userId}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("deleteUserAccount(): Backend response:", data);
+      } else {
+        console.error("deleteUserAccount(): Backend error:");
+        let errMessage = `Sorry, there was an issue, please try again later: ${response.statusText}`;
+        statusMessageDisplay(errMessage, 10);
+      }
+    } catch (error) {
+      let errMessage =
+        "Sorry, there was an issue, please restart the extension and try again.";
+      console.error(
+        "deleteUserAccount(): Error sending request to backend:",
+        error
+      );
       statusMessageDisplay(errMessage, 10);
     }
   }
