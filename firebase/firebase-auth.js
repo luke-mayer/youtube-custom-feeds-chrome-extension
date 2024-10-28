@@ -6185,10 +6185,10 @@ function getAuth(e = n()) {
             : document;
         })().appendChild(n);
     }),
-  gapiScript: "https://apis.google.com/js/api.js",
-  recaptchaV2Script: "https://www.google.com/recaptcha/api.js",
+  gapiScript: "",
+  recaptchaV2Script: "",
   recaptchaEnterpriseScript:
-    "https://www.google.com/recaptcha/enterprise.js?render=",
+    "",
 }),
   (function registerAuth(e) {
     t(
