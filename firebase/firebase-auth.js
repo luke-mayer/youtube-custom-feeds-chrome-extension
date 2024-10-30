@@ -6184,11 +6184,7 @@ function getAuth(e = n()) {
             ? t
             : document;
         })().appendChild(n);
-    }),
-  gapiScript: "",
-  recaptchaV2Script: "",
-  recaptchaEnterpriseScript:
-    "",
+    })
 }),
   (function registerAuth(e) {
     t(
