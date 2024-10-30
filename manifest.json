@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "YouTube Custom Feeds",
-  "version": "1.0",
+  "version": "1.01",
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuun4tvn13hliALZFjU8EwzxcmKt8jvVqbp1yCKzwCxSShKu0ZyaJxaHcTXaf0oL74FLrvSR3H1lBLFjhV21/OjopYAYT3PdE40isw95IHVrKHxGfVtLjlP5A198lE80uCF4SK6JCGL3ezy2VqQ4mT+VfkJya3oCVfiCpWjHcS/Uuojell8uglI1bnjFXzFlpdwCLZZ8W2Zi/Jov5xdAzGsmjH6ZhB23aiYuQW7P0dAULKxtEeTEA5sOtqoj3o5DAOWo3a+JQag/aakd9+ddcjkLe2rLki93CIxVXtFJVi1KLz4QStgpjKj5CHpXMj44yFpxhiUisBaC9RDrUlKadAQIDAQAB",
   "description": "Chrome extension with Firebase Authentication in the side panel used to create custom youtube feeds.",
   "permissions": ["storage", "sidePanel", "tabs"],
