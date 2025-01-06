@@ -45,7 +45,7 @@ function getAuth() {
       target: 'offscreen'
     });
     auth?.name !== 'FirebaseError' ? resolve(auth) : reject(auth);
-  })
+  });
 }
 
 async function firebaseAuth() {
