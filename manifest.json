@@ -23,6 +23,6 @@
     "default_path": "sidepanel/sidepanel.html"
   },
   "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self'; connect-src 'self' https://www.apis.google.com https://www.gstatic.com https://www.googleapis.com https://securetoken.googleapis.com",
+    "extension_pages": "script-src 'self'; object-src 'self'; connect-src 'self' https://www.apis.google.com https://www.gstatic.com https://www.googleapis.com https://securetoken.googleapis.com"
   }
 }
