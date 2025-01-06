@@ -6,7 +6,7 @@
   "description": "Chrome extension with Firebase Authentication in the side panel used to create custom youtube feeds.",
   "permissions": ["storage", "sidePanel", "tabs", "offscreen"],
   "host_permissions": [
-    "https://youtube-custom-feeds-865842770127.us-east4.run.app/*",
+    "https://youtube-custom-feeds-865842770127.us-east4.run.app/*"
   ],
   "action": {
     "default_icon": {
