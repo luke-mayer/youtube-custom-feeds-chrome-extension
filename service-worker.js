@@ -70,7 +70,12 @@ async function firebaseAuth() {
   return auth;
 }
 
+chrome.action.onClicked.addListener(() => {
+  firebaseAuth();
+})
+
 // Allows users to open the side panel by clicking on the action toolbar icon
+/*
 chrome.sidePanel
   .setPanelBehavior({ openPanelOnActionClick: true })
   .catch((error) => console.error(error));
@@ -79,6 +84,7 @@ chrome.sidePanel.setOptions({
   path: "sidepanel/sidepanel.html",
   enabled: true,
 });
+*/
 
 /*
 chrome.tabs.onUpdated.addListener(async (tabId, info, tab) => {
