@@ -2,7 +2,7 @@ const YOUTUBE_ORIGIN = "https://www.youtube.com";
 const OFFSCREEN_DOCUMENT_PATH = '/offscreen.html';
 
 // AUTHENTICATION HANDLING
-let creatingOffscreenDocument;
+let creating = null;
 
 // helper function - returns boolean indicating if a document is already active.
 async function hasDocument() {
