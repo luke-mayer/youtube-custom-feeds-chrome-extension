@@ -56,7 +56,7 @@ async function firebaseAuth() {
       console.log('User Authenticated', auth);
       return auth;
     })
-    .cath(err => {
+    .catch(err => {
       if (err.code === 'auth/operation-not-allowed') {
         console.error('You must enable an OAuth provider in the Firebase' +
           ' console in order to use signInWithPopup.');
