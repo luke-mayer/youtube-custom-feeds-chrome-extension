@@ -2,15 +2,17 @@ const _URL = 'https://custom--feed-438305--auth-web-page-l2tljg0r.web.app/'; // 
 const iframe = document.createElement('iframe');
 iframe.src = _URL;
 document.documentElement.appendChild(iframe);
+console.log("event listener should be added to handle chrome messages");
 chrome.runtime.onMessage.addListener(handleChromeMessages);
 
 function handleChromeMessages(message, sender, sendResponse) {
-  console.log("Inside chrome message receiver.")
+  console.log("Inside chrome message receiver.");
   if (message.target !== 'offscreen') {
     return false;
   }
 
   function handleIframeMessage({ data }) {
+    console.log("Inside handleIframeMessage");
     try {
       if (data.startsWith('!_{')) {
         return;

@@ -2,10 +2,11 @@ const YOUTUBE_ORIGIN = "https://www.youtube.com";
 const OFFSCREEN_DOCUMENT_PATH = '/offscreen.html';
 
 // AUTHENTICATION HANDLING
-let creating = null;
+let creating;
 
 // helper function - returns boolean indicating if a document is already active.
 async function hasDocument() {
+  console.log("hasDocument");
   const matchedClients = await clients.matchAll();
 
   return matchedClients.some(
@@ -14,8 +15,10 @@ async function hasDocument() {
 }
 
 async function setupOffscreenDocument(path) {
+  console.log("Inside setupOffscreenDocument");
   if (!(await hasDocument())) {
     if (creating) {
+      console.log("Inside if(creating) {}");
       await creating;
     } else {
       creating = chrome.offscreen.createDocument({
@@ -32,6 +35,7 @@ async function setupOffscreenDocument(path) {
 }
 
 async function closeOffscreenDocument() {
+  console.log("Inside closeOffscreenDocument");
   if (!(await hasDocument())) {
     return;
   }
@@ -39,6 +43,7 @@ async function closeOffscreenDocument() {
 }
 
 function getAuth() {
+  console.log("Inside getAuth");
   return new Promise(async (resolve, reject) => {
     const auth = await chrome.runtime.sendMessage({
       type: 'firebase-auth',
@@ -49,6 +54,7 @@ function getAuth() {
 }
 
 async function firebaseAuth() {
+  console.log("Inside firebaseAuth");
   await setupOffscreenDocument(OFFSCREEN_DOCUMENT_PATH);
 
   const auth = await getAuth()
