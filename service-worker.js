@@ -49,6 +49,7 @@ function getAuth() {
       type: 'firebase-auth',
       target: 'offscreen'
     });
+    console.log("after sendMessage in getAuth");
     auth?.name !== 'FirebaseError' ? resolve(auth) : reject(auth);
   });
 }
@@ -67,6 +68,7 @@ async function firebaseAuth() {
         console.error('You must enable an OAuth provider in the Firebase' +
           ' console in order to use signInWithPopup.');
       } else {
+        console.log("Let me guess, about to error");
         console.error(err);
         return err;
       }
