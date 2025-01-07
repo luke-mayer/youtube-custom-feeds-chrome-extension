@@ -5,6 +5,7 @@ document.documentElement.appendChild(iframe);
 chrome.runtime.onMessage.addListener(handleChromeMessages);
 
 function handleChromeMessages(message, sender, sendResponse) {
+  console.log("Inside chrome message receiver.")
   if (message.target !== 'offscreen') {
     return false;
   }
